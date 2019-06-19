@@ -26,13 +26,13 @@ jobs:
         - docker cp . app:/root/template
         # List contents of container
         - docker exec app ls /root/template
-        # Upgrade pipenv (and implicitly pip)
-        - docker exec app pip install --upgrade pipenv
-        # Create pipenv virtual environment and install dev packages for testing
+        # Upgrade poetry (and implicitly pip)
+        - docker exec app curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python
+        # Create poetry virtual environment and install dev packages for testing
         # Command origins from here: https://stackoverflow.com/a/28037991/10882657
-        - docker exec -i app bash -c "cd /root/template && pipenv install --dev --python 3.7"
+        - docker exec -i app bash -c "cd /root/template && poetry install"
         # Run tests
-        - docker exec -i app bash -c "cd /root/template && pipenv run pytest test/"
+        - docker exec -i app bash -c "cd /root/template && poetry run pytest test/"
         # Shut down and remove container
         - docker rm -f app
 
@@ -42,8 +42,8 @@ jobs:
         - docker pull python:3.8-rc-slim
         - docker run -it -d --name app python:3.8-rc-slim
         - docker cp . app:/root/template
-        - docker exec app pip install --upgrade pipenv
-        - docker exec -i app bash -c "cd /root/template && pipenv --python python install --dev --python 3.8"
+        - docker exec app curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python
+        - docker exec -i app bash -c "cd /root/template && poetry install"
         - docker exec -i app bash -c "cd /root/template && pipenv run pytest test/"
         - docker rm -f app
 
