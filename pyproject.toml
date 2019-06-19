@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "python-sc2"
+name = "sc2"
 version = "0.11.1"
 description = "A StarCraft II API Client for Python 3"
 authors = ["Hannes Karppila"]
