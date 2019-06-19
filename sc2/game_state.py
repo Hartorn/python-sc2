@@ -171,7 +171,9 @@ class GameState:
         # self.visibility[point]: 0=Hidden, 1=Fogged, 2=Visible
         self.visibility: PixelMap = PixelMap(self.observation_raw.map_state.visibility, mirrored=True)
         # self.creep[point]: 0=No creep, 1=creep
-        self.creep: PixelMap = PixelMap(self.observation_raw.map_state.creep, mirrored=True)
+        # See https://github.com/Dentosal/python-sc2/issues/283#issuecomment-495991889
+        self.creep: PixelMap = PixelMap(self.observation_raw.map_state.creep, in_bits=True, mirrored=True)
+        # self.creep: PixelMap = PixelMap(self.observation_raw.map_state.creep, mirrored=True)
 
         # Effects like ravager bile shot, lurker attack, everything in effect_id.py
         self.effects: Set[EffectData] = {EffectData(effect) for effect in self.observation_raw.effects}
