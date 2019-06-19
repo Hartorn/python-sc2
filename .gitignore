@@ -1,3 +1,5 @@
+.venv
+.history
 # Misc
 .DS_Store
 
