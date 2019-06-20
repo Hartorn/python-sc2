@@ -1,55 +1,18 @@
-
+dist: xenial   # required for Python >= 3.7
 sudo: required
 language: python
 services: docker
-
-
-jobs:
-  # Now, the build result will be determined as soon as all the required jobs finish, based on these results, while the rest of the allow_failures jobs continue to run.
-  fast_finish: true
-
-  # Jobs that are allowed to fail
-  allow_failures:
-    - stage: test python 3.8
-
-  # Jobs that are being run
-  include:
-    - stage: test python 3.7
-      script:
-        # Pull docker image, this step could be skipped
-        - docker pull python:3.7-slim
-        # Create docker container called "app" from image "python:3.7"
-        - docker run -it -d --name app python:3.7-slim
-        # List contents of current folder
-        - ls
-        # Copy repository files and folders to docker container
-        - docker cp . app:/root/template
-        - docker exec app bash -c "apt update && apt install curl ca-certificates -y"
-        # List contents of container
-        - docker exec app ls /root/template
-        # Upgrade poetry (and implicitly pip)
-        - docker exec app curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python
-        - docker exec app bash -c 'source $HOME/.poetry/env'
-        # Create poetry virtual environment and install dev packages for testing
-        # Command origins from here: https://stackoverflow.com/a/28037991/10882657
-        - docker exec -i app bash -c "cd /root/template && poetry install"
-        # Run tests
-        - docker exec -i app bash -c "cd /root/template && poetry run pytest test/"
-        # Shut down and remove container
-        - docker rm -f app
-
-    - stage: test python 3.8
-      script:
-        # TODO: Change to normal python 3.8 version once 3.8 is released
-        - docker pull python:3.8-rc-slim
-        - docker run -it -d --name app python:3.8-rc-slim
-        - docker cp . app:/root/template
-        - docker exec app bash -c "apt update && apt install curl ca-certificates -y"
-        - docker exec app curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python
-        - docker exec app bash -c 'source $HOME/.poetry/env'
-        - docker exec -i app bash -c "cd /root/template && poetry install"
-        - docker exec -i app bash -c "cd /root/template && poetry run pytest test/"
-        - docker rm -f app
+python:
+  - "3.6"
+  - "3.7"
+  - "3.8-dev"
+  
+before_install:
+  - curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python
+  - source $HOME/.poetry/env
+install: 
+  - poetry install
+script : poetry run pytest test/
 
 # Disabled until linux client is at version 4.8.5 or newer - issues with pixelmap that are working on the windows client
 #    - stage: run autotest bot
